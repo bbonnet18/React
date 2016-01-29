@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>React Tutorial</title>
+    <!-- Not present in the tutorial. Just for basic styling. -->
+    <link rel="stylesheet" href="css/base.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+</head>
+<body>
+    <div id="content"></div>
+    <!--<script type="text/babel" src="scripts/example.js">
+    </script>-->
+    <script type="text/babel">
+
+
+        var CommentBox = React.createClass({
+        loadComments:function(){
+        // make the ajax call here to get the data
+        $.ajax({
+        url: this.props.url,
+        dataType: 'json',
+        cache: false,
+        success: function(data) {
+        this.setState({data: data});
+        }.bind(this),
+        error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+        }.bind(this)
+        });
+        },
+        getInitialState:function(){
+        return {data:[]};// initial state has data as an empty array
+        },
+        componentDidMount:function(){
+            this.loadComments();// this because it's a method not anonymous
+            setInterval(this.loadComments, this.props.pollInterval);// poll the server every so often
+        },
+        // render is the most important function when creating a component
+        render:function(){
+        return (
+        <div className="commentBox">
+            <h1>Comments</h1>
+            <CommentList data={this.state.data}></CommentList>
+            <CommentForm />
+
+        </div>)
+        }
+        });
+
+        var CommentList = React.createClass({
+
+        render:function(){
+        // create a var to store all the nodes - this is an array
+        var commentNodes = this.props.data.map(function(comment){
+        return(
+        <Comment author={comment.author} key={comment.id}>
+            {comment.text}
+        </Comment>);
+        });
+        // note the  use of a local variable - commentNodes - created in the map function as the iterable
+        return (
+        <div className="commentList">
+            {commentNodes}
+        </div>
+        )
+        }
+
+        });
+
+        var Comment  = React.createClass({
+        render:function(){
+        return (
+        <div className="comment">
+            <h2 className="commentAuthor">{this.props.author}</h2>
+            {marked(this.props.children.toString())}
+        </div>
+        )
+        }
+        });
+
+        var CommentForm = React.createClass({
+
+        render:function(){
+        return (
+        <div className="commentForm">
+            Hello, I'm a comment form
+        </div>
+        )
+        }
+
+        });
+        // pass the data variable as the data model to this comment box through the attribute data
+        ReactDOM.render(
+        <CommentBox url="comments.json" pollInterval={2000}/>, document.getElementById('content'));
+    </script>
+</body>
+</html>

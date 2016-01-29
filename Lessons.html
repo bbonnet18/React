@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Lessons Learned</title>
+	<meta charset="utf-8" />
+    <link rel="stylesheet" href="public/css/lessons.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script></head>
+<body>
+
+    <div id="ll_mount"></div>
+    <!--these script blocks are used to hold the jsx syntax, which gets rendered as html and js-->
+    <script type="text/babel">
+        var App = React.createClass({
+        // instance methods
+        add:function(){
+
+        },
+        render:function(){
+        return (
+        <div className="ll_container">
+            <h1>Lessons Learned </h1>
+            <button>Add +</button> | <button>Find</button>
+            <div><LessonsHolder></LessonsHolder></div>
+        </div>)
+
+        }
+        });
+
+        var LessonsHolder = React.createClass({
+        addLesson:function(lessonString){
+            console.log('added the lesson to the lessons holder - ' +lessonString);
+        },
+        loadLessons:function(){
+        $.ajax({
+        url:'public/lessons.json',
+        dataType:'json',
+        cache:false,
+        context:this,
+        })
+        .done(function(dat){
+        this.setState({lessons:dat});
+        })
+        .error(function(dat){
+        console.log('error retrieving lessons');
+        });
+
+        },
+        componentDidMount:function(){
+        this.loadLessons();
+        },
+        // sets up the initial state of the data, etc.
+        getInitialState:function(){
+        return {lessons:[]};
+        },
+        // you basically bind the handler to the parent handler by passing it through props
+        render:function(){
+        return (
+        <div>
+            <div><h3>Lesson Holder</h3></div>
+            <div>
+                <ul>
+                    <li><Lesson addLesson={this.addLesson}></Lesson></li>
+                </ul>
+            </div>
+        </div>    )
+
+        }
+        });
+
+        var Lesson = React.createClass({
+        addNew:function(){
+        console.log('new one added');
+        this.props.addLesson('new lesson');
+        }
+        ,
+        render:function(){
+        return (
+        <div>
+            <h4>I am a Lesson</h4>
+            <div>
+                <label htmlFor="lesson">lesson:</label><input name="lesson" type="text" />
+                <button onClick={this.addNew}>add</button>
+            </div>
+
+
+        </div>
+        );
+        }
+        });
+
+
+        ReactDOM.render(
+        <App />, document.getElementById('ll_mount'));
+    </script>
+</body>
+</html>
