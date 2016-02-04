@@ -15,15 +15,11 @@
     <!--these script blocks are used to hold the jsx syntax, which gets rendered as html and js-->
     <script type="text/babel">
         var App = React.createClass({
-        // instance methods
-        add:function(){
-
-        },
+        // instance method
         render:function(){
         return (
         <div className="ll_container">
             <h1>Lessons Learned </h1>
-            <button>Add +</button> | <button>Find</button>
             <div><LessonsHolder></LessonsHolder></div>
         </div>)
 
@@ -32,7 +28,16 @@
 
         var LessonsHolder = React.createClass({
         addLesson:function(lessonString){
-            console.log('added the lesson to the lessons holder - ' +lessonString);
+          var less = this.state.lessons;
+          less.push({
+            key: 4,
+            name: "Fourth Lesson",
+            date: "01/30/2015",
+            content: "Fourth lesson now ...",
+            user: "Newguy",
+            id: 4
+        });
+        this.setState({lessons:less});// cause the rerender with the new data
         },
         loadLessons:function(){
         $.ajax({
@@ -42,7 +47,7 @@
         context:this,
         })
         .done(function(dat){
-        this.setState({lessons:dat});
+        this.setState({lessons:dat.lessons});
         })
         .error(function(dat){
         console.log('error retrieving lessons');
@@ -58,36 +63,49 @@
         },
         // you basically bind the handler to the parent handler by passing it through props
         render:function(){
+        // create the list of lessons
+        var lessonList = this.state.lessons.map(function(lesson){
+
+        // using more jsx to return the items
+        // you must put a key on the object for reconciliation purposes
+        return(
+        <Lesson data={lesson} key={lesson.key} addNew={this.addLesson} />
+
+        )
+        },this);
         return (
-        <div>
+       
+        <div><div><button onClick={this.addLesson}>Add +</button> | <button>Find</button></div>
             <div><h3>Lesson Holder</h3></div>
             <div>
                 <ul>
-                    <li><Lesson addLesson={this.addLesson}></Lesson></li>
+                    {lessonList}
                 </ul>
             </div>
         </div>    )
 
         }
         });
-
         var Lesson = React.createClass({
         addNew:function(){
-        console.log('new one added');
-        this.props.addLesson('new lesson');
+        this.props.addNew('some text');
         }
         ,
+
         render:function(){
         return (
-        <div>
-            <h4>I am a Lesson</h4>
+        <li>
             <div>
-                <label htmlFor="lesson">lesson:</label><input name="lesson" type="text" />
-                <button onClick={this.addNew}>add</button>
+                <h4>{this.props.data.name} - {this.props.data.date}</h4>
+                <div>
+                    <label htmlFor="lesson-text">Lesson:</label><textarea name="lesson-text"></textarea>
+                    <label htmlFor="lesson-title">Title:</label><input name="lesson-title" type="text" />
+                    <button onClick={this.addNew}>add</button>
+                </div>
+
+
             </div>
-
-
-        </div>
+        </li>
         );
         }
         });

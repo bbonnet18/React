@@ -2,6 +2,7 @@
     "lessons": [
 
         {
+            "key": 0,
             "name": "First Lesson",
             "date": "01/28/2015",
             "content": "here is the content of the first lesson",
@@ -9,13 +10,15 @@
             "id": 1
         },
         {
+            "key": 1,
             "name": "Second Lesson",
             "date": "01/29/2015",
             "content": "the content of the second lesson",
             "user": "Brewster Bonnet",
             "id": 2
         },
-         {
+        {
+            "key": 2,
             "name": "Third Lesson",
             "date": "01/30/2015",
             "content": "Third lesson concerned ...",
